@@ -150,3 +150,15 @@ form {
     opacity: 1;
   }
 }
+
+/* Hide scrollbar for all browsers while keeping scroll functionality */
+.scrollbar-hide {
+  /* For Chrome, Safari, Edge */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* For Chrome, Safari, Edge */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

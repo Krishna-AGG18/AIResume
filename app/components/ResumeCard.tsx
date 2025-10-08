@@ -10,14 +10,16 @@ const ResumeCard = ({
 }): JSX.Element => {
   const { fs } = usePuterStore();
   const [resumeUrl, setResumeUrl] = useState("");
-
+  const [loading , setLoading] = useState(true);
   useEffect(() => {
     const loadResume = async () => {
+      setLoading(true)
       const blob = await fs.read(imagePath);
       if (!blob) return;
 
       let url = URL.createObjectURL(blob);
       setResumeUrl(url);
+      setLoading(false)
     };
 
     loadResume();
@@ -46,7 +48,11 @@ const ResumeCard = ({
           <ScoreCircle score={feedback.overallScore} />
         </div>
       </div>
-
+      {
+        loading && (
+          <h3>Loading resume image..</h3>
+        )}
+      
       {resumeUrl && (
         <div className="gradient-border animate-in fade-in duration-1000">
           <div className="w-full h-full">
