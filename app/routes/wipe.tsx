@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import Navbar from "~/components/Navbar";
 import { usePuterStore } from "~/lib/puter";
 
 const WipeApp = () => {
@@ -44,23 +45,26 @@ const WipeApp = () => {
   };
 
   const handleDeleteOne = async (path: string) => {
-    if (!confirm("Delete this file?")) return;
-    setDeleting(true);
-    try {
-      await fs.delete(path);
-      await loadFiles();
-    } catch (err) {
-      console.error("Error deleting file:", err);
-    }
-    setDeleting(false);
-  };
+  if (!confirm("Delete this file?")) return;
+  setDeleting(true);
+  try {
+    await fs.delete(path);
+    // Remove the file from state immediately
+    setFiles((prev) => prev.filter((file) => file.path !== path));
+  } catch (err) {
+    console.error("Error deleting file:", err);
+  }
+  setDeleting(false);
+};
+    
 
   if (isLoading) return <div className="text-center p-8">Loading...</div>;
   if (error) return <div className="text-red-500 text-center p-8">Error: {error}</div>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-50 text-gray-800 py-10 px-6">
-      <div className="max-w-2xl w-full bg-white shadow-md rounded-2xl p-6 border border-gray-100">
+      <div className="min-h-screen flex flex-col items-center bg-gray-50 text-gray-800 py-10 px-6">
+        <Navbar />
+      <div className="max-w-2xl w-full bg-white shadow-md rounded-2xl p-6 border border-gray-100 mt-4">
         <h1 className="text-2xl font-bold mb-2 text-center">
           File Manager
         </h1>
