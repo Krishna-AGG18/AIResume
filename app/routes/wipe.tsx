@@ -44,32 +44,36 @@ const WipeApp = () => {
     setDeleting(false);
   };
 
+  const [deletingFile, setDeletingFile] = useState<string | null>(null);
+
   const handleDeleteOne = async (path: string) => {
-  if (!confirm("Delete this file?")) return;
-  setDeleting(true);
-  try {
-    await fs.delete(path);
-    // Remove the file from state immediately
-    setFiles((prev) => prev.filter((file) => file.path !== path));
-  } catch (err) {
-    console.error("Error deleting file:", err);
-  }
-  setDeleting(false);
-};
-    
+    if (!confirm("Delete this file?")) return;
+
+    setDeletingFile(path);
+    try {
+      await fs.delete(path);
+      await kv.delete(path);
+      setFiles((prev) => prev.filter((file) => file.path !== path));
+      await loadFiles();
+    } catch (err) {
+      console.error("Error deleting file:", err);
+      alert("Failed to delete the file.");
+    }
+    setDeletingFile(null);
+  };
 
   if (isLoading) return <div className="text-center p-8">Loading...</div>;
-  if (error) return <div className="text-red-500 text-center p-8">Error: {error}</div>;
+  if (error)
+    return <div className="text-red-500 text-center p-8">Error: {error}</div>;
 
   return (
-      <div className="min-h-screen flex flex-col items-center bg-gray-50 text-gray-800 py-10 px-6">
-        <Navbar />
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 text-gray-800 py-10 px-6">
+      <Navbar />
       <div className="max-w-2xl w-full bg-white shadow-md rounded-2xl p-6 border border-gray-100 mt-4">
-        <h1 className="text-2xl font-bold mb-2 text-center">
-          File Manager
-        </h1>
+        <h1 className="text-2xl font-bold mb-2 text-center">File Manager</h1>
         <p className="text-center text-gray-600 mb-6">
-          Authenticated as <span className="font-semibold">{auth.user?.username}</span>
+          Authenticated as{" "}
+          <span className="font-semibold">{auth.user?.username}</span>
         </p>
 
         {files.length === 0 ? (
@@ -86,10 +90,10 @@ const WipeApp = () => {
                 </div>
                 <button
                   onClick={() => handleDeleteOne(file.path)}
-                  disabled={deleting}
+                  disabled={deletingFile === file.path}
                   className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 text-sm rounded-md transition"
                 >
-                  Delete
+                  {deletingFile === file.path ? "Deleting..." : "Delete"}
                 </button>
               </div>
             ))}
