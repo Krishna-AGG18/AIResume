@@ -50,7 +50,7 @@ const resume = () => {
       setImageUrl(imageUrl);
 
       setFeedback(data.feedback);
-      console.log(resumeUrl, imageUrl, data.feedback);
+      // console.log(resumeUrl, imageUrl, data.feedback);
     };
 
     loadResume();
